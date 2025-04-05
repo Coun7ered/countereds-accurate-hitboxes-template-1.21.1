@@ -1,11 +1,22 @@
 {
-	"required": true,
-	"package": "net.countered.counteredsaccuratehitboxes.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "net.countered.counteredsaccuratehitboxes.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "server.ModProjectileUtilMixin",
+    "server.ModPlayerEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "accessors.AnimalModelAccessor",
+    "accessors.MixinCuboidAccessor",
+    "accessors.ModelPartAccessor",
+    "accessors.ModLivingEntityRendererAccessor",
+    "client.ModLivingEntityRenderer",
+    "client.entitymodels.ModBipedEntityModelMixin",
+    "client.entitymodels.ModQuadrupedEntityModelMixin",
+    "client.entitymodels.ModSinglePartEntityModelMixin"
+  ]
 }
