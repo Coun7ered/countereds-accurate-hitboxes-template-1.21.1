@@ -10,10 +10,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.AnimalModel;
@@ -85,6 +83,7 @@ public class WeakSpotFeatureRenderer<T extends LivingEntity, M extends EntityMod
             Vec3d absoluteMaxPos = box.getMaxPos().add(cameraPos);
             boxes.add(new Box(absoluteMinPos, absoluteMaxPos));
         }
+
         int lastAge = lastAges.getOrDefault(entity.getUuid(), 0);
         if (entity.age - lastAge < 1) {
             return; // Verhindert das Rendern, wenn die Altersdifferenz zu klein ist
