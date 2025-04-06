@@ -31,7 +31,7 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 				// Weak Spot in der Entity speichern
 				Entity entity = player.getWorld().getEntityById(payload.entityId());
 				if (entity instanceof LivingEntity) {
-					entity.setAttached(HitboxAttachment.HITBOXES, payload.boxList());
+					entity.setAttached(HitboxAttachment.HITBOXES, payload.vertexBoxList());
 				}
 			});
 		});

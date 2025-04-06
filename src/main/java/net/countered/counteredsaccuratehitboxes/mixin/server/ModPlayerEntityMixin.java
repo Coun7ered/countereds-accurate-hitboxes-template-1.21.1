@@ -25,7 +25,7 @@ public abstract class ModPlayerEntityMixin extends LivingEntity {
     protected ModPlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
-
+/*
     @ModifyVariable(method = "attack", at = @At("STORE"), ordinal = 2)
     private boolean modifyCritCondition(boolean original, Entity entity) {
         List<Box> hitboxes = entity.getAttached(HitboxAttachment.HITBOXES);
@@ -41,6 +41,8 @@ public abstract class ModPlayerEntityMixin extends LivingEntity {
         }
         return false; // Kritischer Treffer, wenn der Weak Spot getroffen wurde
     }
+
+ */
     // Prüft, ob das Fadenkreuz auf den Weak Spot zeigt
     @Unique
     private boolean isCrosshairOnWeakSpot(PlayerEntity player, Box weakSpot) {

@@ -42,7 +42,7 @@ public abstract class ModServerPlayNetworkHandlerMixin extends ServerCommonNetwo
     public ModServerPlayNetworkHandlerMixin(MinecraftServer server, ClientConnection connection, ConnectedClientData clientData) {
         super(server, connection, clientData);
     }
-
+    /*
     @Inject(method = "onPlayerInteractEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getBoundingBox()Lnet/minecraft/util/math/Box;"), cancellable = true)
     public void onPlayerInteractEntityCustom(PlayerInteractEntityC2SPacket packet, CallbackInfo ci) {
         ServerPlayNetworkHandler self = (ServerPlayNetworkHandler)(Object)this;
@@ -107,6 +107,8 @@ public abstract class ModServerPlayNetworkHandlerMixin extends ServerCommonNetwo
         }
         ci.cancel();
     }
+
+     */
 }
 
 

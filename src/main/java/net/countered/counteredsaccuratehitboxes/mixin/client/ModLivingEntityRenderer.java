@@ -1,6 +1,6 @@
 package net.countered.counteredsaccuratehitboxes.mixin.client;
 
-import net.countered.counteredsaccuratehitboxes.client.WeakSpotFeatureRenderer;
+import net.countered.counteredsaccuratehitboxes.client.HitboxFeatureRenderer;
 import net.countered.counteredsaccuratehitboxes.mixin.accessors.ModLivingEntityRendererAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +20,6 @@ public abstract class ModLivingEntityRenderer <T extends LivingEntity, M extends
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onInit(EntityRendererFactory.Context ctx, EntityModel model, float shadowRadius, CallbackInfo ci) {
         ModLivingEntityRendererAccessor<T, M> accessor = (ModLivingEntityRendererAccessor<T, M>) (Object) this;
-        accessor.invokeAddFeature(new WeakSpotFeatureRenderer<>(ctx, (LivingEntityRenderer<T, M>) (Object) this));
+        accessor.invokeAddFeature(new HitboxFeatureRenderer<>(ctx, (LivingEntityRenderer<T, M>) (Object) this));
     }
 }

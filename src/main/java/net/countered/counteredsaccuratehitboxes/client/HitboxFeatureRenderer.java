@@ -30,15 +30,15 @@ import org.joml.Vector3f;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class WeakSpotFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends ModStuckObjectsFeatureRenderer<T, M> {
+public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends ModStuckObjectsFeatureRenderer<T, M> {
 
-    public WeakSpotFeatureRenderer(EntityRendererFactory.Context context, LivingEntityRenderer<T, M> entityRenderer) {
+    public HitboxFeatureRenderer(EntityRendererFactory.Context context, LivingEntityRenderer<T, M> entityRenderer) {
         super(entityRenderer);
     }
     private final Map<UUID, Integer> lastAges = new HashMap<>();
     @Override
     protected void renderAtPart(List<Pair<ModelPart, String>> modelPartListWithName, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float tickDelta) {
-        List<Box> boxes = new ArrayList<>();
+        List<List<Vector3f>> vertexCol = new ArrayList<>();
 
         for (Pair<ModelPart, String> modelPart : modelPartListWithName) {
             matrices.push();
@@ -73,28 +73,48 @@ public class WeakSpotFeatureRenderer<T extends LivingEntity, M extends EntityMod
                 matrices.pop();
                 continue;
             }
-            ModelPart.Cuboid cuboid = ((ModelPartAccessor) (Object) modelPart.getLeft()).getCuboids().get(0);
-            matrices.pop();
-            Box box = getCuboidHitbox(cuboid, vertexConsumer, modelPart.getLeft(), matrices, color, OverlayTexture.DEFAULT_UV, light);
+            List<ModelPart.Cuboid> cuboids = ((ModelPartAccessor) (Object) modelPart.getLeft()).getCuboids();
+            for (ModelPart.Cuboid cuboid : cuboids) {
+                matrices.push();
+                List<Vector3f> vertices = getCuboidHitbox(cuboid, vertexConsumer, modelPart.getLeft(), matrices, color, OverlayTexture.DEFAULT_UV, light);
 
-            Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-            Vec3d cameraPos = camera.getPos();
-            Vec3d absoluteMinPos = box.getMinPos().add(cameraPos);
-            Vec3d absoluteMaxPos = box.getMaxPos().add(cameraPos);
-            boxes.add(new Box(absoluteMinPos, absoluteMaxPos));
+                Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+                Vec3d cameraPos = camera.getPos();
+
+                for (Vector3f vertex : vertices) {
+                    vertex  = vertex.add(cameraPos.toVector3f());
+                }
+                vertexCol.add(vertices);
+
+                matrices.pop();
+            }
+            matrices.pop();
         }
+        //renderBoundingBoxes(boxes, matrices, vertexConsumers, entity);
 
         int lastAge = lastAges.getOrDefault(entity.getUuid(), 0);
         if (entity.age - lastAge < 1) {
             return; // Verhindert das Rendern, wenn die Altersdifferenz zu klein ist
         }
         lastAges.put(entity.getUuid(), entity.age); // Aktualisiere den gespeicherten Wert
-
-        entity.setAttached(HitboxAttachment.HITBOXES, boxes);
-        sendHitboxesToClient(boxes, entity);
+        entity.setAttached(HitboxAttachment.HITBOXES, vertexCol);
+        sendHitboxesToClient(vertexCol, entity);
     }
+    // DebugRenderer für das Zeichnen von Linien verwenden
+    private void renderBoundingBoxes(List<Box> boxes, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity) {
+        // Iteriere über alle Boxen
+        for (Box box : boxes) {
 
-    public Box getCuboidHitbox(ModelPart.Cuboid cuboid, VertexConsumer vertexConsumer, ModelPart modelPart, MatrixStack matrices, int color, int overlay, int light) {
+            // Zeichne Linien, um die Box anzuzeigen
+            DebugRenderer.drawBox(matrices, vertexConsumers,
+                    -box.minX, -box.minY, -box.minZ,
+                    -box.maxX, -box.maxY, -box.maxZ,
+                    1,1,0,1);
+        }
+    }
+    public List<Vector3f> getCuboidHitbox(ModelPart.Cuboid cuboid, VertexConsumer vertexConsumer, ModelPart modelPart, MatrixStack matrices, int color, int overlay, int light) {
+        Set<Vector3f> transformedVertices = new HashSet<>();
+
         matrices.push(); // Speichert den aktuellen Transformationszustand
         modelPart.rotate(matrices); // Transformation des ModelParts
 
@@ -119,26 +139,17 @@ public class WeakSpotFeatureRenderer<T extends LivingEntity, M extends EntityMod
                         vertex.pos.z() / 16.0F
                 );
                 transformedPos = matrix4f.transformPosition(transformedPos);
-
-                // Aktualisiere min/max-Koordinaten
-                minX = Math.min(minX, transformedPos.x());
-                minY = Math.min(minY, transformedPos.y());
-                minZ = Math.min(minZ, transformedPos.z());
-                maxX = Math.max(maxX, transformedPos.x());
-                maxY = Math.max(maxY, transformedPos.y());
-                maxZ = Math.max(maxZ, transformedPos.z());
+                transformedVertices.add(transformedPos);
 
                 // Rendering der Vertex-Punkte für den Würfel
                 vertexConsumer.vertex(transformedPos.x(), transformedPos.y(), transformedPos.z(), color, vertex.u, vertex.v, overlay, light, f, g, h);
             }
         }
-        // Erstelle die Box mit den korrekten Grenzen
-        Box box = new Box(minX, minY, minZ, maxX, maxY, maxZ);
         matrices.pop(); // Setzt den Transformationszustand zurück
-        return box;
+        return transformedVertices.stream().toList();
     }
 
-    private void sendHitboxesToClient(List<Box> boxList, Entity entity) {
+    private void sendHitboxesToClient(List<List<Vector3f>> boxList, Entity entity) {
         HitboxPayload payload = new HitboxPayload(boxList, entity.getId());
         // Paket senden
         ClientPlayNetworking.send(payload);

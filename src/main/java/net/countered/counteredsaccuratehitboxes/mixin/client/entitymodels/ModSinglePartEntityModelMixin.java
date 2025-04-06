@@ -1,5 +1,6 @@
 package net.countered.counteredsaccuratehitboxes.mixin.client.entitymodels;
 
+import com.google.common.collect.ImmutableList;
 import net.countered.counteredsaccuratehitboxes.util.ModelPartProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,6 +10,7 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
