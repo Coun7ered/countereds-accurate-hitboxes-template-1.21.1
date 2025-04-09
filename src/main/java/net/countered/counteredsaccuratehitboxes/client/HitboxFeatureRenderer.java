@@ -44,7 +44,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
             matrices.push();
             if (entity.isBaby()) {
                 if (modelPart.getRight().equals(EntityModelPartNames.HEAD) || modelPart.getRight().equals("AnimalHEAD")) {
-                    if (modelPart.getLeft().equals(EntityModelPartNames.HEAD)) {
+                    if (modelPart.getRight().equals(EntityModelPartNames.HEAD)) {
                         matrices.scale(0.75F, 0.75F, 0.75F);
                         matrices.translate(0, 1, 0); // Optional, falls Position korrigiert werden muss
                     } else {
