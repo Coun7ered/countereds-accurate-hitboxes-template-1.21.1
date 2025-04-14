@@ -3,9 +3,7 @@
   "package": "net.countered.counteredsaccuratehitboxes.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    //"server.ModPlayerEntityMixin",
     "server.ModProjectileUtilMixin"
-   // "server.ModServerPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

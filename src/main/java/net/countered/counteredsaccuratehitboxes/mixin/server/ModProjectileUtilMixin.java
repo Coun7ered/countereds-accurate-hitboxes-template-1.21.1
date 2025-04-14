@@ -141,19 +141,25 @@ public abstract class ModProjectileUtilMixin {
 
         // Define the indices for the 12 triangles of a cube (2 per face)
         int[][] triIndices = {
-                // Bottom face
-                {0, 1, 2}, {0, 2, 3},
-                // Top face
-                {4, 7, 5}, {5, 7, 6},
-                // Front face
-                {0, 4, 1}, {1, 4, 5},
-                // Back face
+                // Bottom face (-Y): 0, 1, 4, 5
+                {0, 1, 4}, {1, 5, 4},
+
+                // Top face (+Y): 2, 3, 6, 7
                 {2, 6, 3}, {3, 6, 7},
-                // Left face
-                {0, 3, 4}, {3, 7, 4},
-                // Right face
-                {1, 5, 2}, {2, 5, 6}
+
+                // Front face (-Z): 0, 1, 2, 3
+                {0, 2, 1}, {1, 2, 3},
+
+                // Back face (+Z): 4, 5, 6, 7
+                {4, 5, 6}, {5, 7, 6},
+
+                // Left face (-X): 0, 2, 4, 6
+                {0, 4, 2}, {2, 4, 6},
+
+                // Right face (+X): 1, 3, 5, 7
+                {1, 3, 5}, {3, 7, 5}
         };
+
 
         // Create triangles using the indices
         for (int[] indices : triIndices) {
