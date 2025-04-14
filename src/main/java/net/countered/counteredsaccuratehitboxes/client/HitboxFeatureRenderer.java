@@ -8,6 +8,7 @@ import net.countered.counteredsaccuratehitboxes.util.HitboxAttachment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
@@ -82,7 +83,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
                 Vec3d cameraPos = camera.getPos();
 
                 for (Vector3f vertex : vertices) {
-                    vertex  = vertex.add(cameraPos.toVector3f());
+                    vertex.add(cameraPos.toVector3f());
                 }
                 vertexCol.add(vertices);
 
@@ -98,7 +99,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
         }
         lastAges.put(entity.getUuid(), entity.age); // Aktualisiere den gespeicherten Wert
         entity.setAttached(HitboxAttachment.HITBOXES, vertexCol);
-        sendHitboxesToClient(vertexCol, entity);
+        //sendHitboxesToServer(vertexCol, entity);
     }
     // DebugRenderer für das Zeichnen von Linien verwenden
     private void renderBoundingBoxes(List<Box> boxes, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity) {
@@ -149,7 +150,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
         return transformedVertices.stream().toList();
     }
 
-    private void sendHitboxesToClient(List<List<Vector3f>> boxList, Entity entity) {
+    private void sendHitboxesToServer(List<List<Vector3f>> boxList, Entity entity) {
         HitboxPayload payload = new HitboxPayload(boxList, entity.getId());
         // Paket senden
         ClientPlayNetworking.send(payload);

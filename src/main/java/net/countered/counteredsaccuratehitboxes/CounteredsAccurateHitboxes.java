@@ -8,7 +8,9 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,7 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 		LOGGER.info("Initializing Countered's Accurate Hitboxes");
 
 		HitboxAttachment.register();
+		/*
 		PayloadTypeRegistry.playC2S().register(HitboxPayload.ID, HitboxPayload.CODEC);
 
 		ServerPlayNetworking.registerGlobalReceiver(HitboxPayload.ID, (payload, context) -> {
@@ -35,5 +38,8 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 				}
 			});
 		});
+
+		 */
 	}
+
 }
