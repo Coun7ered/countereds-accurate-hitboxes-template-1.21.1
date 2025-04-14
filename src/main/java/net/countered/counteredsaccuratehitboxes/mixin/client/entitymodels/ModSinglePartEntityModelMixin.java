@@ -5,9 +5,11 @@ import net.countered.counteredsaccuratehitboxes.util.ModelPartProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.random.Random;
@@ -23,6 +25,8 @@ import java.util.List;
 public abstract class ModSinglePartEntityModelMixin<E extends Entity> extends EntityModel<E> implements ModelPartProvider {
 
     @Shadow public abstract ModelPart getPart();
+
+    @Shadow public abstract void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color);
 
     @Unique
     @Override
@@ -89,7 +93,7 @@ public abstract class ModSinglePartEntityModelMixin<E extends Entity> extends En
             children.add(new Pair<>(root.getChild("body1"), "child_part"));
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 9; i++) {
             if (root.hasChild("tentacle" + i)) {
                 children.add(new Pair<>(root.getChild("tentacle" + i), "child_part"));
             }
