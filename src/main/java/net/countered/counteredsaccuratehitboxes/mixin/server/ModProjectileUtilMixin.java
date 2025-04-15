@@ -43,7 +43,7 @@ public abstract class ModProjectileUtilMixin {
 
             // Fallback auf normale Hitbox
             if (hitboxes == null || hitboxes.isEmpty()) {
-                Box fallback = target.getBoundingBox();
+                Box fallback = target.getBoundingBox().expand(target.getTargetingMargin());
                 Optional<Vec3d> optional = fallback.raycast(min, max);
 
                 if (fallback.contains(min)) {

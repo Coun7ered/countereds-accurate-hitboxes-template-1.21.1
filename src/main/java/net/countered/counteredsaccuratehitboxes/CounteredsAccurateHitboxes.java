@@ -20,6 +20,11 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	//TODO
+	// Add: Bee, Chicken, Horselike, Slime, Axolotl, Breeze, Cat, Endermite, Fox, Hoglin, Llama, Magmacube, ocelot, rabbit, shulker, silverfish, sniffer, tadpole, warden, wolf, zoglin,
+	// Fix: Blaze, Villager, Allay, Bat, Camel, Cod, Dolphin, Guardians, Evoker, Frog, Goat, BabyPanda, Parrot, Phantom, PolarBearbaby, Ravager, snowgolem, babyturtle, vex, vindicator, wanderingtrader, witch,
+	// Add projectile correct hitbox
+	// fix2: sheep wool, clothing, fins
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Countered's Accurate Hitboxes");
@@ -38,7 +43,6 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 				}
 			});
 		});
-
 		 */
 	}
 

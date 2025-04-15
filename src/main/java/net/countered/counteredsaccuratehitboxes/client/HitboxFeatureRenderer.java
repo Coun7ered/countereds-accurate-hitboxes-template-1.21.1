@@ -56,7 +56,6 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
                 }
             }
 
-
             List<ModelPart.Cuboid> cuboids = ((ModelPartAccessor) (Object) modelPart.getLeft()).getCuboids();
             if (cuboids.isEmpty()) {
                 matrices.pop();
@@ -144,7 +143,6 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
 
         MatrixStack.Entry entry = matrices.peek();
         Matrix4f matrix4f = entry.getPositionMatrix();
-        Vector3f vector3f = new Vector3f();
 
         for (ModelPart.Quad quad : ((MixinCuboidAccessor) (Object) cuboid).getSides()) {
 
