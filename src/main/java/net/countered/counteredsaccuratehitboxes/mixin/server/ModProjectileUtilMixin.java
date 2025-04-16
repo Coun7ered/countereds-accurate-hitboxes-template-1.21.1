@@ -40,7 +40,6 @@ public abstract class ModProjectileUtilMixin {
 
         for (Entity target : world.getOtherEntities(entity, box, predicate)) {
             List<List<Vector3f>> hitboxes = target.getAttached(HitboxAttachment.HITBOXES);
-
             // Fallback auf normale Hitbox
             if (hitboxes == null || hitboxes.isEmpty()) {
                 Box fallback = target.getBoundingBox().expand(target.getTargetingMargin());
@@ -70,8 +69,11 @@ public abstract class ModProjectileUtilMixin {
             }
             // Trefferprüfung gegen alle Custom-Hitboxen (pro Quader mit 8 Punkten)
             for (List<Vector3f> cubeVerts : hitboxes) {
-
+                if (cubeVerts.size() == 4) {
+                    cubeVerts = inflateQuadToBox(cubeVerts, 0.01f); // → künstlich „dicke“ Box machen
+                }
                 if (cubeVerts.size() != 8) {
+                    //System.out.println("cubeVerts.size() != 8");
                     continue;
                 }
                 List<Vector3f> sortedVerts = sortVertices(cubeVerts);
@@ -107,11 +109,55 @@ public abstract class ModProjectileUtilMixin {
     }
 
     @Unique
-    private static void showHitboxVertices(World world, List<Vector3f> verts) {
-        for (Vector3f v : verts) {
-            world.addParticle(ParticleTypes.END_ROD, v.x, v.y, v.z, 0, 0, 0);
+    private static List<Vector3f> inflateQuadToBox(List<Vector3f> quad, float thickness) {
+        if (quad.size() != 4) throw new IllegalArgumentException("Expected 4 vertices for quad");
+
+        // Berechne Normalenvektor der Fläche
+        Vector3f a = quad.get(0);
+        Vector3f b = quad.get(1);
+        Vector3f c = quad.get(2);
+
+        Vector3f ab = new Vector3f(b.x() - a.x(), b.y() - a.y(), b.z() - a.z());
+        Vector3f ac = new Vector3f(c.x() - a.x(), c.y() - a.y(), c.z() - a.z());
+
+        // Kreuzprodukt für die Normale
+        Vector3f normal = new Vector3f(
+                ab.y() * ac.z() - ab.z() * ac.y(),
+                ab.z() * ac.x() - ab.x() * ac.z(),
+                ab.x() * ac.y() - ab.y() * ac.x()
+        );
+
+        normal.normalize(); // wichtig!
+        float halfThickness = thickness / 2f;
+
+        // Skaliere den Normalenvektor
+        normal = new Vector3f(
+                normal.x() * halfThickness,
+                normal.y() * halfThickness,
+                normal.z() * halfThickness
+        );
+
+        // Erzeuge 8 Punkte durch Verschieben in beide Richtungen entlang der Normale
+        List<Vector3f> inflated = new ArrayList<>(8);
+        for (Vector3f v : quad) {
+            Vector3f plus = new Vector3f(
+                    v.x() + normal.x(),
+                    v.y() + normal.y(),
+                    v.z() + normal.z()
+            );
+            Vector3f minus = new Vector3f(
+                    v.x() - normal.x(),
+                    v.y() - normal.y(),
+                    v.z() - normal.z()
+            );
+            inflated.add(plus);
+            inflated.add(minus);
         }
+
+        return inflated;
     }
+
+
     @Unique
     private static List<Vector3f> sortVertices(List<Vector3f> verts) {
         if (verts.size() != 8) {
@@ -134,7 +180,6 @@ public abstract class ModProjectileUtilMixin {
                 )
                 .toList();
     }
-
     @Unique
     private static List<Triangle> buildCubeTriangles(List<Vector3f> verts) {
         List<Triangle> triangles = new ArrayList<>(12);
@@ -236,5 +281,12 @@ public abstract class ModProjectileUtilMixin {
 
         // Return the intersection point
         return Optional.of(rayOrigin.add(rayDir.multiply(t)));
+    }
+
+    @Unique
+    private static void showHitboxVertices(World world, List<Vector3f> verts) {
+        for (Vector3f v : verts) {
+            world.addParticle(ParticleTypes.END_ROD, v.x, v.y, v.z, 0, 0, 0);
+        }
     }
 }
