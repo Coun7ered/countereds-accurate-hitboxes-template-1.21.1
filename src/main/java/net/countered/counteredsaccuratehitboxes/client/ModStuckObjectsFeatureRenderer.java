@@ -55,13 +55,12 @@ public abstract class ModStuckObjectsFeatureRenderer <T extends LivingEntity, M 
                     try {
                         ModelPart part = (ModelPart) field.get(model);
                         if (part != null && allParts.add(part)) {
-                            for (ModelPart child : ((ModelPartAccessor) (Object) part).getChildren().values()) {
-                                childToParent.put(child, part);
-                            }
+                            collectChildrenRecursive(part, childToParent);
                         }
                     } catch (IllegalAccessException ignored) {}
                 }
             }
+
             currentClass = currentClass.getSuperclass();
         }
 
@@ -74,8 +73,11 @@ public abstract class ModStuckObjectsFeatureRenderer <T extends LivingEntity, M 
 
         return roots;
     }
-
-
-
+    private static void collectChildrenRecursive(ModelPart parent, Map<ModelPart, ModelPart> childToParent) {
+        for (ModelPart child : ((ModelPartAccessor) (Object) parent).getChildren().values()) {
+            childToParent.put(child, parent);
+            collectChildrenRecursive(child, childToParent);
+        }
+    }
 }
 
