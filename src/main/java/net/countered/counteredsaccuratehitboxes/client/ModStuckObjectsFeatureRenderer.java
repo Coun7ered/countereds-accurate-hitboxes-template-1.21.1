@@ -54,13 +54,16 @@ public abstract class ModStuckObjectsFeatureRenderer <T extends LivingEntity, M 
                     field.setAccessible(true);
                     try {
                         ModelPart part = (ModelPart) field.get(model);
+
+                        if (field.getName().equals("cloak") || field.getName().equals("ear")) {
+                            continue;
+                        }
                         if (part != null && allParts.add(part)) {
                             collectChildrenRecursive(part, childToParent);
                         }
                     } catch (IllegalAccessException ignored) {}
                 }
             }
-
             currentClass = currentClass.getSuperclass();
         }
 

@@ -19,6 +19,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Pair;
@@ -36,36 +37,46 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
     public HitboxFeatureRenderer(EntityRendererFactory.Context context, LivingEntityRenderer<T, M> entityRenderer) {
         super(entityRenderer);
     }
-    private final Map<Integer, Integer> lastAges = new HashMap<>();
 
     @Override
     protected void renderAtPart(List<ModelPart> modelPartList, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float tickDelta) {
         List<List<Vector3f>> vertexCol = new ArrayList<>();
-        Set<ModelPart> visitedParts = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        if (entity.isBaby() && !babyAllowed.contains(entity.getType())) return;
+        M model = getContextModel();
         for (ModelPart modelPart : modelPartList) {
-            vertexCol.addAll(createHitboxes(matrices, modelPart, entity, vertexConsumers, light, visitedParts));
+            Set<ModelPart> excludedParts = new HashSet<>();
+            vertexCol.addAll(createHitboxes(matrices, modelPart, entity, vertexConsumers, light, excludedParts));
         }
-        int lastAge = lastAges.getOrDefault(entity.getId(), 0);
-        if (entity.age - lastAge < 1) {
-            return; // Verhindert das Rendern, wenn die Altersdifferenz zu klein ist
-        }
-        lastAges.put(entity.getId(), entity.age); // Aktualisiere den gespeicherten Wert
-        //System.out.println(vertexCol.size() + "vert");
+
         entity.setAttached(HitboxAttachment.HITBOXES, vertexCol);
-        //sendHitboxesToServer(vertexCol, entity);
     }
 
-    private List<List<Vector3f>> createHitboxes(MatrixStack matrices, ModelPart modelPart, T entity, VertexConsumerProvider vertexConsumers, int light, Set<ModelPart> visitedParts) {
-        List<List<Vector3f>> vertexList = new ArrayList<>();
-        /*
-        if (!visitedParts.add(modelPart)) {
-            return vertexList;
+    private static final List<EntityType> babyAllowed = new ArrayList<>();
+    static {
+        babyAllowed.add(EntityType.ZOMBIE);
+        babyAllowed.add(EntityType.ZOMBIE_VILLAGER);
+        babyAllowed.add(EntityType.PIGLIN);
+        babyAllowed.add(EntityType.ZOMBIFIED_PIGLIN);
+        babyAllowed.add(EntityType.COW);
+        babyAllowed.add(EntityType.PIG);
+        babyAllowed.add(EntityType.SHEEP);
+    }
+    private List<List<Vector3f>> createHitboxes(MatrixStack matrices, ModelPart modelPart, T entity, VertexConsumerProvider vertexConsumers, int light, Set<ModelPart> excludedParts) {
+        if (modelPart.hasChild(EntityModelPartNames.HAT_RIM)) {
+            excludedParts.add(modelPart.getChild(EntityModelPartNames.HAT_RIM));
         }
-
-         */
+        if (excludedParts.contains(modelPart)) {
+            return Collections.emptyList();
+        }
+        List<List<Vector3f>> vertexList = new ArrayList<>();
         matrices.push();
         if (entity.isBaby()) {
             scaleBabyMatices(entity, modelPart, matrices);
+        }
+        if (entity.getType().equals(EntityType.RABBIT)) {
+            matrices.scale(0.6F, 0.6F, 0.6F);
+            matrices.translate(0, 1, 0);
         }
         if (modelPart.visible) {
             List<ModelPart.Cuboid> cuboids = ((ModelPartAccessor) (Object) modelPart).getCuboids();
@@ -83,7 +94,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
                 vertexList.add(vertices);
             }
             for (ModelPart modelChildren : ((ModelPartAccessor) (Object) modelPart).getChildren().values()) {
-                vertexList.addAll(createHitboxes(matrices, modelChildren, entity, vertexConsumers, light, visitedParts));
+                vertexList.addAll(createHitboxes(matrices, modelChildren, entity, vertexConsumers, light, excludedParts));
             }
         }
         matrices.pop();

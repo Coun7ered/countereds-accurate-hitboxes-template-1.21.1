@@ -3,9 +3,9 @@
 	"id": "countereds-accurate-hitboxes",
 	"version": "${version}",
 	"name": "Countered's Accurate Hitboxes",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod that gives entities model accurate hitboxes",
 	"authors": [
-		"Me!"
+		"Countered!"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
