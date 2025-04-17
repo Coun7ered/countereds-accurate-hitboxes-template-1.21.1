@@ -36,7 +36,7 @@ public abstract class ModStuckObjectsFeatureRenderer <T extends LivingEntity, M 
         this.renderAtPart(modelParts, matrixStack, vertexConsumerProvider, light, livingEntity, h);
     }
 
-    public static List<ModelPart> getModelRoots(EntityModel<?> model) {
+    private static List<ModelPart> getModelRoots(EntityModel<?> model) {
         List<ModelPart> roots = new ArrayList<>();
 
         if (model instanceof SinglePartEntityModel<?> singlePartModel) {

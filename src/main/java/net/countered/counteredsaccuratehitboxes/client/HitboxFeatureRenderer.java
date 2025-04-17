@@ -20,6 +20,7 @@ import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -56,10 +57,16 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
 
     private List<List<Vector3f>> createHitboxes(MatrixStack matrices, ModelPart modelPart, T entity, VertexConsumerProvider vertexConsumers, int light, Set<ModelPart> visitedParts) {
         List<List<Vector3f>> vertexList = new ArrayList<>();
+        /*
         if (!visitedParts.add(modelPart)) {
-            return vertexList; // schon besucht → vermeiden
+            return vertexList;
         }
+
+         */
         matrices.push();
+        if (entity.isBaby()) {
+            scaleBabyMatices(entity, modelPart, matrices);
+        }
         if (modelPart.visible) {
             List<ModelPart.Cuboid> cuboids = ((ModelPartAccessor) (Object) modelPart).getCuboids();
             modelPart.rotate(matrices);
@@ -81,6 +88,28 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
         }
         matrices.pop();
         return vertexList;
+    }
+
+    private void scaleBabyMatices(T entity, ModelPart modelPart, MatrixStack matrices) {
+        if (getContextModel() instanceof BipedEntityModel model) {
+            if (modelPart.equals(model.head)) {
+                matrices.scale(0.75F, 0.75F, 0.75F);
+                matrices.translate(0, 1, 0);
+                return;
+            }
+        }
+        else if (getContextModel() instanceof AnimalModel model) {
+            List<ModelPart> headPartList = new ArrayList<>();
+            ((AnimalModelAccessor)model).getHeadParts().forEach((part)->headPartList.add((ModelPart) part));
+            if (!headPartList.isEmpty()) {
+                if (headPartList.get(0).equals(modelPart)) {
+                    matrices.translate(0, ((AnimalModelAccessor) model).getChildHeadYOffset() / 16, ((AnimalModelAccessor) model).getChildHeadZOffset() / 16);
+                    return;
+                }
+            }
+        }
+        matrices.scale(0.5F, 0.5F, 0.5F);
+        matrices.translate(0, 1.5, 0);
     }
 
     public List<Vector3f> getCuboidHitbox(ModelPart.Cuboid cuboid, ModelPart modelPart, MatrixStack matrices) {
