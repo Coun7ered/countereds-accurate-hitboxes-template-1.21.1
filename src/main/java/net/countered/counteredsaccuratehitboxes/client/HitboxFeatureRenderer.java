@@ -3,7 +3,6 @@ package net.countered.counteredsaccuratehitboxes.client;
 import net.countered.counteredsaccuratehitboxes.mixin.accessors.AnimalModelAccessor;
 import net.countered.counteredsaccuratehitboxes.mixin.accessors.MixinCuboidAccessor;
 import net.countered.counteredsaccuratehitboxes.mixin.accessors.ModelPartAccessor;
-import net.countered.counteredsaccuratehitboxes.networking.HitboxPayload;
 import net.countered.counteredsaccuratehitboxes.util.HitboxAttachment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -83,7 +82,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
             modelPart.rotate(matrices);
             for (ModelPart.Cuboid cuboid : cuboids) {
                 // Debug
-                makePartGlow(entity, vertexConsumers, matrices, OverlayTexture.DEFAULT_UV, light, cuboid, modelPart);
+                //makePartGlow(entity, vertexConsumers, matrices, OverlayTexture.DEFAULT_UV, light, cuboid, modelPart);
                 List<Vector3f> vertices = getCuboidHitbox(cuboid, modelPart, matrices);
                 Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
                 Vec3d cameraPos = camera.getPos();
@@ -179,10 +178,5 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
                 vertexConsumer.vertex(transformedPos.x(), transformedPos.y(), transformedPos.z(), color, vertex.u, vertex.v, overlay, light, f, g, h);
             }
         }
-    }
-    private void sendHitboxesToServer(List<List<Vector3f>> boxList, Entity entity) {
-        HitboxPayload payload = new HitboxPayload(boxList, entity.getId());
-        // Paket senden
-        ClientPlayNetworking.send(payload);
     }
 }

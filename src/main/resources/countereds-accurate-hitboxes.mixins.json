@@ -13,9 +13,6 @@
     "accessors.MixinCuboidAccessor",
     "accessors.ModelPartAccessor",
     "accessors.ModLivingEntityRendererAccessor",
-    "client.ModLivingEntityRenderer",
-    "client.entitymodels.ModBipedEntityModelMixin",
-    "client.entitymodels.ModQuadrupedEntityModelMixin",
-    "client.entitymodels.ModSinglePartEntityModelMixin"
+    "client.ModLivingEntityRenderer"
   ]
 }

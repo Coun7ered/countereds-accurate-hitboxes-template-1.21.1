@@ -1,7 +1,6 @@
 package net.countered.counteredsaccuratehitboxes.client;
 
 import net.countered.counteredsaccuratehitboxes.mixin.accessors.ModelPartAccessor;
-import net.countered.counteredsaccuratehitboxes.util.ModelPartProvider;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -11,10 +10,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.util.Pair;
 
 import java.lang.reflect.Field;
 import java.util.*;
