@@ -6,23 +6,21 @@ import net.countered.counteredsaccuratehitboxes.mixin.accessors.ModelPartAccesso
 import net.countered.counteredsaccuratehitboxes.util.HitboxAttachment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.model.*;
+import net.minecraft.client.render.entity.model.AnimalModel;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
@@ -123,23 +121,30 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
     }
 
     public List<Vector3f> getCuboidHitbox(ModelPart.Cuboid cuboid, ModelPart modelPart, MatrixStack matrices) {
-        Set<Vector3f> transformedVertices = new HashSet<>();
-        MatrixStack.Entry entry = matrices.peek();
-        Matrix4f matrix4f = entry.getPositionMatrix();
+        float x1 = cuboid.minX / 16.0f;
+        float y1 = cuboid.minY / 16.0f;
+        float z1 = cuboid.minZ / 16.0f;
+        float x2 = cuboid.maxX / 16.0f;
+        float y2 = cuboid.maxY / 16.0f;
+        float z2 = cuboid.maxZ / 16.0f;
 
-        for (ModelPart.Quad quad : ((MixinCuboidAccessor) (Object) cuboid).getSides()) {
-            for (ModelPart.Vertex vertex : quad.vertices) {
-                // Transformiere die Position des Vertex
-                Vector3f transformedPos = new Vector3f(
-                        vertex.pos.x() / 16.0F,
-                        vertex.pos.y() / 16.0F,
-                        vertex.pos.z() / 16.0F
-                );
-                transformedPos = matrix4f.transformPosition(transformedPos);
-                transformedVertices.add(transformedPos);
-            }
+        Vector3f[] cubeVerts = {
+                new Vector3f(x1, y1, z1),
+                new Vector3f(x2, y1, z1),
+                new Vector3f(x1, y2, z1),
+                new Vector3f(x2, y2, z1),
+                new Vector3f(x1, y1, z2),
+                new Vector3f(x2, y1, z2),
+                new Vector3f(x1, y2, z2),
+                new Vector3f(x2, y2, z2),
+        };
+
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        for (int i = 0; i < cubeVerts.length; i++) {
+            cubeVerts[i] = matrix.transformPosition(cubeVerts[i]);
         }
-        return transformedVertices.stream().toList();
+
+        return Arrays.asList(cubeVerts);
     }
 
     private void makePartGlow(Entity entity, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int overlay, int light, ModelPart.Cuboid cuboid, ModelPart modelPart) {

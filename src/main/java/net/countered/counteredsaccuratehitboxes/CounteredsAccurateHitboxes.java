@@ -2,6 +2,16 @@ package net.countered.counteredsaccuratehitboxes;
 
 import net.countered.counteredsaccuratehitboxes.util.HitboxAttachment;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.math.BlockPos;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +28,10 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 
 		HitboxAttachment.register();
 
-		/* DEBUG
+		//spawnMobsDebug();
+	}
+
+	private void spawnMobsDebug() {
 		KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 				"key.mymod.spawn_all_entities",         // Anzeigename in Controls-Menü
 				InputUtil.Type.KEYSYM,                  // Tastatur (nicht Maus)
@@ -28,11 +41,11 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			while (keyBinding.wasPressed()) {
-			int spacing = 4;
-			int gridWidth = 10; // Anzahl Entities pro Zeile
+				int spacing = 4;
+				int gridWidth = 10; // Anzahl Entities pro Zeile
 
-			int count = 0;
-			for (EntityType<?> type : Registries.ENTITY_TYPE) {
+				int count = 0;
+				for (EntityType<?> type : Registries.ENTITY_TYPE) {
 					if (type != EntityType.PLAYER) {
 						for (int i = 0; i < 1; i++) {
 							Entity entity = type.create(server.getOverworld());
@@ -54,7 +67,5 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 				}
 			}
 		});
-
-		 */
 	}
 }
