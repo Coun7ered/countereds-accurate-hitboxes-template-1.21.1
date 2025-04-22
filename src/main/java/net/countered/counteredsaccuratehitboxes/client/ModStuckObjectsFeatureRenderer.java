@@ -36,7 +36,7 @@ public abstract class ModStuckObjectsFeatureRenderer <T extends LivingEntity, M 
         List<ModelPart> roots = new ArrayList<>();
 
         if (model instanceof SinglePartEntityModel<?> singlePartModel) {
-            roots.add(singlePartModel.getPart()); // einzig wahrer Root
+            roots.add(singlePartModel.getPart());
             return roots;
         }
 
@@ -63,7 +63,6 @@ public abstract class ModStuckObjectsFeatureRenderer <T extends LivingEntity, M 
             currentClass = currentClass.getSuperclass();
         }
 
-        // Root-Parts = alle Parts, die **keinen** Parent in der Map haben
         for (ModelPart part : allParts) {
             if (!childToParent.containsKey(part)) {
                 roots.add(part);

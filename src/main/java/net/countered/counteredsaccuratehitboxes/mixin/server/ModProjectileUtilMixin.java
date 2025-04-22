@@ -40,7 +40,7 @@ public abstract class ModProjectileUtilMixin {
 
         for (Entity target : world.getOtherEntities(entity, box, predicate)) {
             List<List<Vector3f>> hitboxes = target.getAttached(HitboxAttachment.HITBOXES);
-            // Fallback auf normale Hitbox
+
             if (hitboxes == null || hitboxes.isEmpty()) {
                 Box fallback = target.getBoundingBox().expand(target.getTargetingMargin());
                 Optional<Vec3d> optional = fallback.raycast(min, max);
@@ -67,7 +67,7 @@ public abstract class ModProjectileUtilMixin {
                 }
                 continue;
             }
-            // Trefferprüfung gegen alle Custom-Hitboxen (pro Quader mit 8 Punkten)
+
             for (List<Vector3f> cubeVerts : hitboxes) {
                 if (cubeVerts.size() == 4) {
                     cubeVerts = inflateQuadToBox(cubeVerts, 0.01f); // → künstlich „dicke“ Box machen
@@ -78,9 +78,9 @@ public abstract class ModProjectileUtilMixin {
                 List<Vector3f> sortedVerts = sortVertices(cubeVerts);
                 //showHitboxVertices(world, sortedVerts);
 
-                // Build triangles from the cube vertices
+
                 List<Triangle> triangles = buildCubeTriangles(sortedVerts);
-                // Test ray against all triangles
+
                 for (Triangle triangle : triangles) {
                     Optional<Vec3d> intersection = rayTriangleIntersect(min, rayDir, rayLength, triangle);
                     if (intersection.isPresent()) {
@@ -109,7 +109,6 @@ public abstract class ModProjectileUtilMixin {
     private static List<Vector3f> inflateQuadToBox(List<Vector3f> quad, float thickness) {
         if (quad.size() != 4) throw new IllegalArgumentException("Expected 4 vertices for quad");
 
-        // Berechne Normalenvektor der Fläche
         Vector3f a = quad.get(0);
         Vector3f b = quad.get(1);
         Vector3f c = quad.get(2);
@@ -117,24 +116,21 @@ public abstract class ModProjectileUtilMixin {
         Vector3f ab = new Vector3f(b.x() - a.x(), b.y() - a.y(), b.z() - a.z());
         Vector3f ac = new Vector3f(c.x() - a.x(), c.y() - a.y(), c.z() - a.z());
 
-        // Kreuzprodukt für die Normale
         Vector3f normal = new Vector3f(
                 ab.y() * ac.z() - ab.z() * ac.y(),
                 ab.z() * ac.x() - ab.x() * ac.z(),
                 ab.x() * ac.y() - ab.y() * ac.x()
         );
 
-        normal.normalize(); // wichtig!
+        normal.normalize();
         float halfThickness = thickness / 2f;
 
-        // Skaliere den Normalenvektor
         normal = new Vector3f(
                 normal.x() * halfThickness,
                 normal.y() * halfThickness,
                 normal.z() * halfThickness
         );
 
-        // Erzeuge 8 Punkte durch Verschieben in beide Richtungen entlang der Normale
         List<Vector3f> inflated = new ArrayList<>(8);
         for (Vector3f v : quad) {
             Vector3f plus = new Vector3f(
@@ -161,26 +157,24 @@ public abstract class ModProjectileUtilMixin {
             throw new IllegalArgumentException("Expected exactly 8 vertices");
         }
 
-        // Berechne geometrischen Mittelpunkt
         Vector3f center = new Vector3f();
         for (Vector3f v : verts) {
             center.add(v);
         }
         center.div(8.0f);
 
-        // Sortiere Vertices relativ zum Mittelpunkt nach Quadrant im Raum
         return verts.stream()
                 .sorted(Comparator
-                        .comparing((Vector3f v) -> v.y < center.y) // Bottom (true) first
-                        .thenComparing(v -> v.z < center.z)        // Front (true) first
-                        .thenComparing(v -> v.x < center.x)        // Left (true) first
+                        .comparing((Vector3f v) -> v.y < center.y)
+                        .thenComparing(v -> v.z < center.z)
+                        .thenComparing(v -> v.x < center.x)
                 )
                 .toList();
     }
     @Unique
     private static List<Triangle> buildCubeTriangles(List<Vector3f> verts) {
         List<Triangle> triangles = new ArrayList<>(12);
-        // Define the indices for the 12 triangles of a cube (2 per face)
+
         int[][] triIndices = {
                 // Bottom face (-Y): 0, 1, 4, 5
                 {0, 1, 4}, {1, 5, 4},

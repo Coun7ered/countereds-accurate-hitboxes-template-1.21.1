@@ -79,7 +79,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
             List<ModelPart.Cuboid> cuboids = ((ModelPartAccessor) (Object) modelPart).getCuboids();
             modelPart.rotate(matrices);
             for (ModelPart.Cuboid cuboid : cuboids) {
-                // Debug
+                //Debug
                 //makePartGlow(entity, vertexConsumers, matrices, OverlayTexture.DEFAULT_UV, light, cuboid, modelPart);
                 List<Vector3f> vertices = getCuboidHitbox(cuboid, modelPart, matrices);
                 Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
@@ -148,17 +148,15 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
     }
 
     private void makePartGlow(Entity entity, VertexConsumerProvider vertexConsumers, MatrixStack matrices, int overlay, int light, ModelPart.Cuboid cuboid, ModelPart modelPart) {
-        // Berechne einen pulsierenden Alpha-Wert basierend auf der Entity-Alterung (age).
-        float pulse = (MathHelper.sin(entity.age * 0.25f) + 1.0f) / 2.0f; // Wert zwischen 0 und 1
-        int alpha = (int) (pulse * 80) + 100; // Alpha zwischen 0 und 255
 
-        // Definiere die Farbe: Rot pulsierend (ARGB)
+        float pulse = (MathHelper.sin(entity.age * 0.25f) + 1.0f) / 2.0f;
+        int alpha = (int) (pulse * 80) + 100;
+
         int red = 250;
         int green = 30;
         int blue = 30;
         int color = (alpha << 24) | (red << 16) | (green << 8) | blue;
 
-        // Hole einen VertexConsumer aus einem passenden RenderLayer.
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(ModRenderLayers.WEAK_SPOT_LAYER);
 
         MatrixStack.Entry entry = matrices.peek();
@@ -171,7 +169,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
             float h = vector3f2.z();
 
             for (ModelPart.Vertex vertex : quad.vertices) {
-                // Transformiere die Position des Vertex
+
                 Vector3f transformedPos = new Vector3f(
                         vertex.pos.x() / 16.0F,
                         vertex.pos.y() / 16.0F,
@@ -179,7 +177,7 @@ public class HitboxFeatureRenderer<T extends LivingEntity, M extends EntityModel
                 );
                 transformedPos = matrix4f.transformPosition(transformedPos);
 
-                // Rendering der Vertex-Punkte für den Würfel
+
                 vertexConsumer.vertex(transformedPos.x(), transformedPos.y(), transformedPos.z(), color, vertex.u, vertex.v, overlay, light, f, g, h);
             }
         }

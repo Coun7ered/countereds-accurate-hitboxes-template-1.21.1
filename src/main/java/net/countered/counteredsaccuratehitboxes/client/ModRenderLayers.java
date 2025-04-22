@@ -13,17 +13,17 @@ public class ModRenderLayers {
             "weak_spot",
             VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
             VertexFormat.DrawMode.QUADS,
-            256, // Buffersize anpassen
+            256,
             true,
-            true, // Muss true sein für Transparenz
+            true,
             RenderLayer.MultiPhaseParameters.builder()
-                    .program(ENTITY_TRANSLUCENT_EMISSIVE_PROGRAM) // Ermöglicht Glow
+                    .program(ENTITY_TRANSLUCENT_EMISSIVE_PROGRAM)
                     .depthTest(LEQUAL_DEPTH_TEST)
-                    .transparency(Transparency.TRANSLUCENT_TRANSPARENCY) // Ermöglicht Transparenz
-                    .lightmap(DISABLE_LIGHTMAP) // Macht das Leuchten unabhängig vom Lichtlevel
+                    .transparency(Transparency.TRANSLUCENT_TRANSPARENCY)
+                    .lightmap(DISABLE_LIGHTMAP)
                     //.overlay(ENABLE_OVERLAY_COLOR)
                     .writeMaskState(COLOR_MASK)
-                    //.cull(DISABLE_CULLING) // Falls die Rückseite sichtbar sein soll
+                    //.cull(DISABLE_CULLING)
                     .target(OUTLINE_TARGET)
                     .layering(VIEW_OFFSET_Z_LAYERING)
                     .texture(new Texture(Identifier.of(CounteredsAccurateHitboxes.MOD_ID, "textures/white16x16.png"), false, false))

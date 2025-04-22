@@ -20,8 +20,6 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	//TODO
-	// Add projectile correct hitbox
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing Countered's Accurate Hitboxes");
@@ -33,16 +31,16 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 
 	private void spawnMobsDebug() {
 		KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-				"key.mymod.spawn_all_entities",         // Anzeigename in Controls-Menü
-				InputUtil.Type.KEYSYM,                  // Tastatur (nicht Maus)
-				GLFW.GLFW_KEY_F9,                       // Taste (hier F9)
-				"category.mymod.debug"                  // Kategorie im Controls-Menü
+				"key.mymod.spawn_all_entities",
+				InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_F9,
+				"category.mymod.debug"
 		));
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			while (keyBinding.wasPressed()) {
 				int spacing = 4;
-				int gridWidth = 10; // Anzahl Entities pro Zeile
+				int gridWidth = 10;
 
 				int count = 0;
 				for (EntityType<?> type : Registries.ENTITY_TYPE) {
@@ -56,7 +54,7 @@ public class CounteredsAccurateHitboxes implements ModInitializer {
 								BlockPos spawnPos = i == 0 ? server.getOverworld().getSpawnPos().add(x, 50, z) : server.getOverworld().getSpawnPos().add(x, 55, z);
 								if (i == 1) living.setBaby(true);
 								living.refreshPositionAndAngles(spawnPos, 0.0F, 0.0F);
-								living.setAiDisabled(true); // <- wichtig: AI deaktivieren
+								living.setAiDisabled(true);
 								living.setNoGravity(true);
 								living.setInvulnerable(true);
 								server.getOverworld().spawnEntity(living);
